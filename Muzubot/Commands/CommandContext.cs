@@ -1,14 +1,16 @@
+using Muzubot.Twitch;
 using TwitchLib.Client.Models;
 
 namespace Muzubot.Commands;
 
 public class CommandContext
 {
-    public CommandContext(ChatMessage meta)
+    public CommandContext(TwitchConnector connector, ChatMessage meta)
     {
         _arguments = meta.Message.Split(new[] { " " },
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         _messageMeta = meta;
+        _connector = connector;
     }
 
     public bool ResolveCommand(string prefix, out string command)
@@ -38,4 +40,5 @@ public class CommandContext
 
     private readonly string[] _arguments;
     private readonly ChatMessage _messageMeta;
+    private readonly TwitchConnector _connector;
 }

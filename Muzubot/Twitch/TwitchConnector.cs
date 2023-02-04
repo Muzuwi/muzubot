@@ -32,6 +32,7 @@ public class TwitchConnector
         Task.Run(() => { _client.Connect(); });
     }
 
+    public TwitchClient Client => _client;
     public event Func<ChatMessage, Task> MessageReceived;
 
     private void OnLog(object? sender, OnLogArgs e)

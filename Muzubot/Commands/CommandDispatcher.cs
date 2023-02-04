@@ -15,6 +15,7 @@ public class CommandDispatcher
         _logger = logger;
         _commandPrefix = config.Prefix;
         _modules = new();
+        _connector = connector;
         connector.MessageReceived += MessageReceived;
     }
 
@@ -66,7 +67,7 @@ public class CommandDispatcher
             return;
         }
 
-        var context = new CommandContext(args);
+        var context = new CommandContext(_connector, args);
         if (!context.ResolveCommand(_commandPrefix, out var command))
         {
             //  Malformed command 
@@ -99,4 +100,5 @@ public class CommandDispatcher
     private readonly string _commandPrefix;
     private ServiceProvider? _moduleDepsProvider;
     private Dictionary<string, Type> _modules;
+    private TwitchConnector _connector;
 }
