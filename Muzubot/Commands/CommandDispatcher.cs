@@ -10,7 +10,7 @@ namespace Muzubot.Commands;
 
 public class CommandDispatcher
 {
-    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, TwitchConnector connector)
+    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, ChannelConnector connector)
     {
         _logger = logger;
         _commandPrefix = config.Prefix;
@@ -100,5 +100,5 @@ public class CommandDispatcher
     private readonly string _commandPrefix;
     private ServiceProvider? _moduleDepsProvider;
     private Dictionary<string, Type> _modules;
-    private TwitchConnector _connector;
+    private ChannelConnector _connector;
 }

@@ -17,11 +17,12 @@ public class Muzubot
     public async Task Run()
     {
         _serviceProvider = ConfigureServices();
-        _ = _serviceProvider.GetRequiredService<TwitchConnector>();
+        var twitchConnector = _serviceProvider.GetRequiredService<TwitchConnector>();
+        await twitchConnector.Connect();
 
         var dispatcher = _serviceProvider.GetRequiredService<CommandDispatcher>();
-
         dispatcher.InitializeCommandModules(Assembly.GetEntryAssembly()!, _serviceProvider);
+
         await Task.Delay(-1);
     }
 
@@ -30,6 +31,7 @@ public class Muzubot
         return new ServiceCollection()
             .AddSingleton(_config)
             .AddSingleton<TwitchConnector>()
+            .AddSingleton<ChannelConnector>()
             .AddSingleton<CommandDispatcher>()
             .AddLogging(config => config
                 .AddConsole()

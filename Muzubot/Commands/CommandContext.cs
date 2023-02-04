@@ -5,7 +5,7 @@ namespace Muzubot.Commands;
 
 public class CommandContext
 {
-    public CommandContext(TwitchConnector connector, ChatMessage meta)
+    public CommandContext(ChannelConnector connector, ChatMessage meta)
     {
         _arguments = meta.Message.Split(new[] { " " },
             StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
@@ -40,5 +40,5 @@ public class CommandContext
 
     private readonly string[] _arguments;
     private readonly ChatMessage _messageMeta;
-    private readonly TwitchConnector _connector;
+    private readonly ChannelConnector _connector;
 }
