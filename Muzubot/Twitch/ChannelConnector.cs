@@ -17,6 +17,25 @@ public class ChannelConnector
         _connector.Client.JoinChannel(_channel);
     }
 
+    /// <summary>
+    /// Send a message in the channel of the connector
+    /// </summary>
+    /// <param name="message">Contents of the message</param>
+    public void Send(string message)
+    {
+        _connector.Client.SendMessage(_channel, message);
+    }
+
+    /// <summary>
+    /// Reply to a message
+    /// </summary>
+    /// <param name="message">Contents of the reply</param>
+    /// <param name="replyingTo">Message being replied to</param>
+    public void Reply(string message, ChatMessage replyingTo)
+    {
+        _connector.Client.SendReply(_channel, replyingTo.Id, message);
+    }
+
     public event Func<ChatMessage, Task> MessageReceived;
     public string Channel => _channel;
 

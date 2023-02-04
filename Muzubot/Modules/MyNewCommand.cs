@@ -14,6 +14,7 @@ public class MyNewCommand
     public async Task EnterDungeon(CommandContext context)
     {
         _logger.LogInformation("Welcome from command module");
+        context.Reply($"It is now {DateTime.Now}");
     }
 
     private readonly ILogger<MyNewCommand> _logger;
