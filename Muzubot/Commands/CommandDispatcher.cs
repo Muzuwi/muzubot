@@ -27,7 +27,7 @@ public class CommandDispatcher
     private Dictionary<string, Type> SearchForCommandModules(Assembly assembly)
     {
         var types = assembly.ExportedTypes
-            .Where(type => type.IsClass && type.IsPublic && type.BaseType == typeof(BaseCommand));
+            .Where(type => type.IsClass && type.IsPublic);
 
         var modules = new Dictionary<string, Type>();
         foreach (var type in types)

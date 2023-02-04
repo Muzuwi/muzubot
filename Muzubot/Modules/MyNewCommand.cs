@@ -3,7 +3,7 @@ using Muzubot.Commands;
 
 namespace Muzubot.Modules;
 
-public class MyNewCommand : BaseCommand
+public class MyNewCommand
 {
     public MyNewCommand(ILogger<MyNewCommand> logger)
     {
