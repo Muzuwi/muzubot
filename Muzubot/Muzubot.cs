@@ -1,8 +1,11 @@
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Muzubot.Commands;
+using Muzubot.Storage;
+using Muzubot.Storage.Impl;
 using Muzubot.Twitch;
 
 namespace Muzubot;
@@ -33,6 +36,7 @@ public class Muzubot
             .AddSingleton<TwitchConnector>()
             .AddSingleton<ChannelConnector>()
             .AddSingleton<CommandDispatcher>()
+            .AddScoped<IStorageConnector, MemoryStorage>()
             .AddLogging(config => config
                 .AddConsole()
                 .SetMinimumLevel(_config.LogLevel))
