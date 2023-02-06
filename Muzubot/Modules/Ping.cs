@@ -5,7 +5,7 @@ namespace Muzubot.Modules;
 
 public class Ping
 {
-    [CommandOpts("ping")]
+    [CommandOpts("ping", 60)]
     public async Task EnterDungeon(CommandContext context)
     {
         var tmiTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(context.Meta.TmiSentTs)).LocalDateTime;
