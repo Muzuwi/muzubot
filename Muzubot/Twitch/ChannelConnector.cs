@@ -51,13 +51,11 @@ public class ChannelConnector
 
     private void OnMessageReceived(object? sender, OnMessageReceivedArgs e)
     {
-        _logger.LogDebug("message received: {:0}", e.ChatMessage);
         if (e.ChatMessage.Channel != _channel)
         {
             return;
         }
 
-        _logger.LogInformation($"#{_channel} => Received message: {e.ChatMessage.Message}");
         MessageReceived.Invoke(e.ChatMessage);
     }
 
