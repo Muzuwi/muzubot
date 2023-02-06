@@ -2,6 +2,7 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Muzubot.Commands;
+using Muzubot.Storage;
 using Muzubot.Twitch;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -10,12 +11,14 @@ namespace Muzubot.Commands;
 
 public class CommandDispatcher
 {
-    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, ChannelConnector connector)
+    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, ChannelConnector connector,
+        IStorageConnector storageConnector)
     {
         _logger = logger;
         _commandPrefix = config.Prefix;
         _modules = new();
         _connector = connector;
+        _storageConnector = storageConnector;
         connector.MessageReceived += MessageReceived;
     }
 
@@ -67,7 +70,8 @@ public class CommandDispatcher
             return;
         }
 
-        var context = new CommandContext(_connector, args);
+        var userData = await FetchUserData(args.UserId);
+        var context = new CommandContext(_connector, args, userData);
         if (!context.ResolveCommand(_commandPrefix, out var command))
         {
             //  Malformed command 
@@ -88,6 +92,17 @@ public class CommandDispatcher
                 .GetType()
                 .GetMethods()
                 .First(m => m.HasCommandOptAttribute());
+
+            var commandInfo = entryMethod
+                .GetCustomAttributes()
+                .OfType<CommandOpts>()
+                .First();
+            if (!context.UseCommand(commandInfo))
+            {
+                _logger.LogDebug("Cooldown ongoing - ignoring command invocation");
+                return;
+            }
+
             await (Task)entryMethod.Invoke(obj, new object[] { context });
         }
         catch (Exception ex)
@@ -96,9 +111,22 @@ public class CommandDispatcher
         }
     }
 
+    private async Task<UserData> FetchUserData(string uid)
+    {
+        var userData = await _storageConnector.FetchOrCreateUserData(uid);
+        if (userData is null)
+        {
+            _logger.LogError($"Failed creating user data for user {uid}");
+            throw new InvalidOperationException($"Failed creating user data for user {uid}");
+        }
+
+        return userData;
+    }
+
     private readonly ILogger<CommandDispatcher> _logger;
     private readonly string _commandPrefix;
     private ServiceProvider? _moduleDepsProvider;
     private Dictionary<string, Type> _modules;
     private ChannelConnector _connector;
+    private readonly IStorageConnector _storageConnector;
 }
