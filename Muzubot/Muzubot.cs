@@ -7,6 +7,7 @@ using Muzubot.Commands;
 using Muzubot.Storage;
 using Muzubot.Storage.Impl;
 using Muzubot.Twitch;
+using Npgsql;
 
 namespace Muzubot;
 
@@ -37,6 +38,7 @@ public class Muzubot
             .AddSingleton<ChannelConnector>()
             .AddSingleton<CommandDispatcher>()
             .AddScoped<IStorageConnector, MemoryStorage>()
+            .AddSingleton(_ => NpgsqlDataSource.Create(_config.DbConnectionString))
             .AddLogging(config => config
                 .AddConsole()
                 .SetMinimumLevel(_config.LogLevel))
