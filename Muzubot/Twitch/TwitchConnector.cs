@@ -1,11 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Logging;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
-using TwitchLib.PubSub.Models.Responses.Messages.AutomodCaughtMessage;
 
 namespace Muzubot.Twitch;
 

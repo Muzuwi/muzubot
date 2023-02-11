@@ -1,12 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.Contracts;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Muzubot.Commands;
 using Muzubot.Storage;
 using Muzubot.Twitch;
-using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 
 namespace Muzubot.Commands;

@@ -1,10 +1,7 @@
-using System.Data;
 using Microsoft.Extensions.Logging;
 using Muzubot.Commands;
 using Muzubot.Storage;
 using Muzubot.Storage.Models;
-using Npgsql;
-using NpgsqlTypes;
 
 namespace Muzubot.Modules;
 
