@@ -15,7 +15,7 @@ public class CommandUsage
         {
             UID = uid,
             Command = commandName,
-            LastUsed = DateTime.UtcNow
+            LastUsed = null
         };
     }
 
