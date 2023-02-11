@@ -27,7 +27,7 @@ public class MyNewCommand
         var xp = random.NextInt64(0, 2048);
 
         dungeonData.Experience += (int)xp;
-        _db.Dungeon.Update(dungeonData);
+        _db.Dungeon.AddOrUpdate(dungeonData);
         await _db.SaveChangesAsync();
 
         context.Reply(
