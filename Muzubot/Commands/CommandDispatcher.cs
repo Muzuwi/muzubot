@@ -133,7 +133,7 @@ public class CommandDispatcher
         return module
             .GetType()
             .GetMethods()
-            .FirstOrDefault(m => m.HasCommandOptAttribute());
+            .FirstOrDefault(m => m.HasCommandOptAttribute() && m.GetCommandOptAttribute().Command == command);
     }
 
     private async Task InvokeModuleCommandHandler(object module, MethodBase method, CommandContext commandContext)
