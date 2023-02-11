@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.Contracts;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -11,14 +13,12 @@ namespace Muzubot.Commands;
 
 public class CommandDispatcher
 {
-    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, ChannelConnector connector,
-        IStorageConnector storageConnector)
+    public CommandDispatcher(ILogger<CommandDispatcher> logger, Configuration config, ChannelConnector connector)
     {
         _logger = logger;
         _commandPrefix = config.Prefix;
         _modules = new();
         _connector = connector;
-        _storageConnector = storageConnector;
         connector.MessageReceived += MessageReceived;
     }
 
@@ -65,62 +65,131 @@ public class CommandDispatcher
 
     private async Task MessageReceived(ChatMessage args)
     {
-        if (!args.Message.StartsWith(_commandPrefix))
+        var context = CreateCommandContext(args, out var commandName);
+        if (context is null)
         {
             return;
         }
 
-        var userData = await FetchUserData(args.UserId);
-        var context = new CommandContext(_connector, args, userData);
-        if (!context.ResolveCommand(_commandPrefix, out var command))
+        var moduleObject = CreateModuleInstanceForCommand(commandName);
+        if (moduleObject is null)
+        {
+            return;
+        }
+
+        //  Get the command handler method from the module object
+        var entryMethod = GetModuleMethodForCommand(moduleObject, commandName);
+        if (entryMethod is null)
+        {
+            return;
+        }
+
+        var commandInfo = entryMethod.GetCommandOptAttribute();
+        if (!await UpdateCommandCooldown(args, commandInfo))
+        {
+            return;
+        }
+
+        await InvokeModuleCommandHandler(moduleObject, entryMethod, context);
+    }
+
+    private CommandContext? CreateCommandContext(ChatMessage message, out string command)
+    {
+        if (!message.Message.StartsWith(_commandPrefix))
+        {
+            command = "";
+            return null;
+        }
+
+        var context = new CommandContext(_connector, message);
+        if (!context.ResolveCommand(_commandPrefix, out command))
         {
             //  Malformed command 
-            return;
+            return null;
         }
 
+        return context;
+    }
+
+    private object? CreateModuleInstanceForCommand(string command)
+    {
         if (!_modules.ContainsKey(command))
         {
             //  Command not found
-            return;
+            return null;
         }
 
-        var type = _modules[command];
         try
         {
+            var type = _modules[command];
             var obj = ActivatorUtilities.CreateInstance(_moduleDepsProvider!, type);
-            var entryMethod = obj
-                .GetType()
-                .GetMethods()
-                .First(m => m.HasCommandOptAttribute());
-
-            var commandInfo = entryMethod
-                .GetCustomAttributes()
-                .OfType<CommandOpts>()
-                .First();
-            if (!context.UseCommand(commandInfo))
-            {
-                _logger.LogDebug("Cooldown ongoing - ignoring command invocation");
-                return;
-            }
-
-            await (Task)entryMethod.Invoke(obj, new object[] { context });
+            return obj;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning("Failed creating command module: {:0}", ex.ToString());
+            _logger.LogWarning("Instantiation of module for command {:0} failed: {:1}", command, ex.ToString());
+            return null;
         }
     }
 
-    private async Task<UserData> FetchUserData(string uid)
+    private MethodInfo? GetModuleMethodForCommand(object module, string command)
     {
-        var userData = await _storageConnector.FetchOrCreateUserData(uid);
-        if (userData is null)
-        {
-            _logger.LogError($"Failed creating user data for user {uid}");
-            throw new InvalidOperationException($"Failed creating user data for user {uid}");
-        }
+        return module
+            .GetType()
+            .GetMethods()
+            .FirstOrDefault(m => m.HasCommandOptAttribute());
+    }
 
-        return userData;
+    private async Task InvokeModuleCommandHandler(object module, MethodBase method, CommandContext commandContext)
+    {
+        try
+        {
+            //  Execute the command handler
+            await (Task)method.Invoke(module, new object[] { commandContext });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Command module execution threw an exception: {:0}", ex.ToString());
+        }
+    }
+
+    private BotDbContext CreateDbContext()
+    {
+        var obj = ActivatorUtilities.CreateInstance(_moduleDepsProvider!, typeof(BotDbContext));
+        return obj as BotDbContext ?? throw new InvalidOperationException("Could not instantiate a DB context");
+    }
+
+    private async Task<bool> UpdateCommandCooldown(ChatMessage message, CommandOpts commandInfo)
+    {
+        try
+        {
+            await using var context = CreateDbContext();
+
+            var cooldownData = context.CommandUsage
+                .SingleOrDefault(usage => usage.Command == commandInfo.Command && usage.UID == message.UserId);
+
+            var usage = cooldownData is null
+                ? new CommandUsage(message.UserId, commandInfo.Command)
+                : new CommandUsage(cooldownData);
+
+            var canUseCommand = usage.UseCommand(commandInfo);
+            //  If the user can't use the command, we can skip the rest
+            if (!canUseCommand)
+            {
+                return false;
+            }
+
+            //  Update cooldown data in the db 
+            context.CommandUsage.AddOrUpdate(usage.Model);
+            await context.SaveChangesAsync();
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning("Updating cooldown failed: {:0}", ex.ToString());
+            return false;
+        }
     }
 
     private readonly ILogger<CommandDispatcher> _logger;
@@ -128,5 +197,4 @@ public class CommandDispatcher
     private ServiceProvider? _moduleDepsProvider;
     private Dictionary<string, Type> _modules;
     private ChannelConnector _connector;
-    private readonly IStorageConnector _storageConnector;
 }
