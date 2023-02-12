@@ -1,7 +1,13 @@
 create table dungeon
 (
-    uid        varchar(255) PRIMARY KEY,
-    experience int
+    uid            varchar(255) PRIMARY KEY,
+    experience     int,
+    gold           int,
+    attack_points  int,
+    defense_points int,
+    agility_points int,
+    luck_points    int,
+    unspent_points int
 );
 
 create table command_usage
