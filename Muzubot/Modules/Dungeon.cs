@@ -6,9 +6,9 @@ using Muzubot.Storage.Models;
 
 namespace Muzubot.Modules;
 
-public class MyNewCommand
+public class DungeonModule
 {
-    public MyNewCommand(ILogger<MyNewCommand> logger, BotDbContext db)
+    public DungeonModule(ILogger<DungeonModule> logger, BotDbContext db)
     {
         _logger = logger;
         _db = db;
@@ -41,6 +41,6 @@ public class MyNewCommand
         }
     }
 
-    private readonly ILogger<MyNewCommand> _logger;
+    private readonly ILogger<DungeonModule> _logger;
     private readonly BotDbContext _db;
 }
