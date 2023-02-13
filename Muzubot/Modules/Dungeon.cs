@@ -37,6 +37,22 @@ public class DungeonModule
         }
     }
 
+    [CommandOpts("stats", 60)]
+    public async Task Stats(CommandContext context)
+    {
+        var player = FetchOrCreatePlayerData(context.Meta.UserId);
+
+        var levelText = $"Level {player.Level}";
+        var experienceText = $"{player.Experience} / {Constants.LevelToExperience(player.Level + 1)} XP 💠";
+        var goldText = $"🪙 {player.Model.Gold}";
+        var skillsText =
+            $"⚔ {player.Model.AttackPoints} 🛡 {player.Model.DefensePoints} 💨 {player.Model.AgilityPoints} 🎲 {player.Model.LuckPoints}";
+        var availablePointsText = $"🎓 {player.Model.UnspentPoints}";
+
+        context.Reply(
+            $"@{context.Meta.Username} | {levelText} | {experienceText} | {goldText} | {skillsText} | {availablePointsText}");
+    }
+
     private Player FetchOrCreatePlayerData(string uid)
     {
         var dungeonData = _db.Dungeon
