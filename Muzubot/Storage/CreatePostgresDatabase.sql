@@ -1,6 +1,7 @@
 create table dungeon
 (
     uid            varchar(255) PRIMARY KEY,
+    level          int,
     experience     int,
     gold           int,
     attack_points  int,

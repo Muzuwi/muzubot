@@ -12,6 +12,11 @@ public class DungeonData
     public string UID { get; set; }
 
     /// <summary>
+    /// User level
+    /// </summary>
+    public int Level { get; set; }
+
+    /// <summary>
     /// Experience points
     /// </summary>
     public int Experience { get; set; }
