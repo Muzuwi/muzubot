@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Muzubot.Commands;
+using Muzubot.Utilities;
 
 namespace Muzubot.Modules;
 
@@ -11,7 +12,10 @@ public class Ping
         var tmiTime = DateTimeOffset.FromUnixTimeMilliseconds(long.Parse(context.Meta.TmiSentTs)).LocalDateTime;
         var uptime = DateTime.Now - Process.GetCurrentProcess().StartTime;
         var latency = DateTime.Now - tmiTime;
+
+        var commitHash = GitInfo.GetBuildCommitHash() ?? "unknown";
+        var branch = GitInfo.GetBuildBranch() ?? "unknown";
         context.Reply(
-            $"Pong! Uptime: {uptime:dd}d{uptime:hh}h{uptime:mm}m, latency to TMI: {latency.TotalMilliseconds}ms");
+            $"Pong! Uptime: {uptime:dd}d{uptime:hh}h{uptime:mm}m, latency to TMI: {latency.TotalMilliseconds}ms. Running muzubot: branch {branch}/{commitHash}");
     }
 }
