@@ -16,6 +16,6 @@ public class Ping
         var commitHash = GitInfo.GetBuildCommitHash() ?? "unknown";
         var branch = GitInfo.GetBuildBranch() ?? "unknown";
         context.Reply(
-            $"Pong! Uptime: {uptime:dd}d{uptime:hh}h{uptime:mm}m, latency to TMI: {latency.TotalMilliseconds}ms. Running muzubot: branch {branch}/{commitHash}");
+            $"Pong! Uptime: {uptime:dd}d{uptime:hh}h{uptime:mm}m, latency to TMI: {(int)latency.TotalMilliseconds}ms. Running muzubot: branch {branch}/{commitHash}");
     }
 }
