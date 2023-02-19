@@ -29,6 +29,7 @@ public class ChannelConnector
         if (!await _verifier.Verify(message))
         {
             _logger.LogWarning("Banphrase failed for message: '{:0}'", message);
+            _connector.Client.SendMessage(_channel, "Detected banned phrase in message monkaS");
             return;
         }
 
@@ -45,6 +46,7 @@ public class ChannelConnector
         if (!await _verifier.Verify(message))
         {
             _logger.LogWarning("Banphrase failed for message: '{:0}'", message);
+            _connector.Client.SendReply(_channel, replyingTo.Id, "Detected banned phrase in message monkaS");
             return;
         }
 
