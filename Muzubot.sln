@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Muzubot", "Muzubot\Muzubot.csproj", "{EABBC308-EF40-4842-9AF4-627296D9EE6E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuzubotTests", "MuzubotTests\MuzubotTests.csproj", "{0F7B9E6E-1E48-41AC-9B4B-8D96266DA4EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{EABBC308-EF40-4842-9AF4-627296D9EE6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EABBC308-EF40-4842-9AF4-627296D9EE6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EABBC308-EF40-4842-9AF4-627296D9EE6E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0F7B9E6E-1E48-41AC-9B4B-8D96266DA4EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0F7B9E6E-1E48-41AC-9B4B-8D96266DA4EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0F7B9E6E-1E48-41AC-9B4B-8D96266DA4EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0F7B9E6E-1E48-41AC-9B4B-8D96266DA4EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
