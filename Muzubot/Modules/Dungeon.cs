@@ -29,11 +29,11 @@ public class DungeonModule
         _db.Dungeon.AddOrUpdate(player.Model);
         await _db.SaveChangesAsync();
 
-        context.Reply(
+        await context.Reply(
             $"@{context.Meta.Username} | You have gained {xp} experience! You now have {player.Experience} XP.");
         if (oldLevel != newLevel)
         {
-            context.Reply($"@{context.Meta.Username} leveled up! Level {newLevel}");
+            await context.Reply($"@{context.Meta.Username} leveled up! Level {newLevel}");
         }
     }
 
@@ -49,7 +49,7 @@ public class DungeonModule
             $"⚔ {player.Model.AttackPoints} 🛡 {player.Model.DefensePoints} 💨 {player.Model.AgilityPoints} 🎲 {player.Model.LuckPoints}";
         var availablePointsText = $"🎓 {player.Model.UnspentPoints}";
 
-        context.Reply(
+        await context.Reply(
             $"@{context.Meta.Username} | {levelText} | {experienceText} | {goldText} | {skillsText} | {availablePointsText}");
     }
 

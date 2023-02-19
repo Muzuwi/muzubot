@@ -38,7 +38,7 @@ public class CommandContext
     /// Reply to the message that invoked the command
     /// </summary>
     /// <param name="message">Contents of the reply</param>
-    public void Reply(string message) => _connector.Reply(message, _messageMeta);
+    public async Task Reply(string message) => await _connector.Reply(message, _messageMeta);
 
     public string[] Args => _arguments;
     public ChatMessage Meta => _messageMeta;

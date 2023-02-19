@@ -21,7 +21,7 @@ public class ChannelConnector
     /// Send a message in the channel of the connector
     /// </summary>
     /// <param name="message">Contents of the message</param>
-    public void Send(string message)
+    public async Task Send(string message)
     {
         _connector.Client.SendMessage(_channel, message);
     }
@@ -31,7 +31,7 @@ public class ChannelConnector
     /// </summary>
     /// <param name="message">Contents of the reply</param>
     /// <param name="replyingTo">Message being replied to</param>
-    public void Reply(string message, ChatMessage replyingTo)
+    public async Task Reply(string message, ChatMessage replyingTo)
     {
         _connector.Client.SendReply(_channel, replyingTo.Id, message);
     }
