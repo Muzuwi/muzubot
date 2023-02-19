@@ -10,6 +10,7 @@ public class Configuration
     public LogLevel LogLevel;
     public string Prefix;
     public string DbConnectionString;
+    public string? PajbotUrl;
 
     private Configuration()
     {
@@ -19,6 +20,7 @@ public class Configuration
         LogLevel = LogLevel.Information;
         Prefix = "";
         DbConnectionString = "";
+        PajbotUrl = null;
     }
 
     public static Configuration FromEnvironment()
@@ -29,6 +31,7 @@ public class Configuration
         var logLevelString = GetEnvironmentVariableOrDefault("MUZUBOT_LOG_LEVEL", "trace");
         var prefix = GetEnvironmentVariableOrDefault("MUZUBOT_PREFIX", "+");
         var dbConnString = GetEnvironmentVariableChecked("MUZUBOT_DB_CONNECTION_STRING");
+        var pajbotUrl = Environment.GetEnvironmentVariable("MUZUBOT_PAJBOT_URL");
 
         if (!Enum.TryParse(logLevelString, true, out LogLevel logLevel))
         {
@@ -42,7 +45,8 @@ public class Configuration
             TwitchChannel = channel,
             LogLevel = logLevel,
             Prefix = prefix,
-            DbConnectionString = dbConnString
+            DbConnectionString = dbConnString,
+            PajbotUrl = pajbotUrl
         };
         return config;
     }

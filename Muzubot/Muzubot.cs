@@ -2,6 +2,8 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Muzubot.Commands;
+using Muzubot.Policy;
+using Muzubot.Policy.Pajbot;
 using Muzubot.Storage;
 using Muzubot.Twitch;
 
@@ -33,6 +35,15 @@ public class Muzubot
             .AddSingleton<TwitchConnector>()
             .AddSingleton<ChannelConnector>()
             .AddSingleton<CommandDispatcher>()
+            .AddSingleton<IMessageVerifier>(_ =>
+            {
+                if (_config.PajbotUrl is not null)
+                {
+                    return new PajbotVerifier(_config.PajbotUrl);
+                }
+
+                return new FallbackVerifier();
+            })
             .AddTransient<BotDbContext>()
             .AddLogging(config => config
                 .AddConsole()
