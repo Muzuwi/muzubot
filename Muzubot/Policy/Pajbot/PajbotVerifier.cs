@@ -15,7 +15,7 @@ public class PajbotVerifier : IMessageVerifier
     public async Task<bool> Verify(string message)
     {
         var response = await VerifyMessage(message);
-        return response.Banned;
+        return !response.Banned;
     }
 
     public async Task<TestResponse> VerifyMessage(string message)
