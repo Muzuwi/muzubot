@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Muzubot.Policy;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 
@@ -6,11 +7,13 @@ namespace Muzubot.Twitch;
 
 public class ChannelConnector
 {
-    public ChannelConnector(ILogger<ChannelConnector> logger, TwitchConnector connector, Configuration config)
+    public ChannelConnector(ILogger<ChannelConnector> logger, TwitchConnector connector, Configuration config,
+        IMessageVerifier verifier)
     {
         _logger = logger;
         _connector = connector;
         _channel = config.TwitchChannel;
+        _verifier = verifier;
 
         _connector.Client.OnJoinedChannel += OnJoinedChannel;
         _connector.Client.OnMessageReceived += OnMessageReceived;
@@ -23,6 +26,12 @@ public class ChannelConnector
     /// <param name="message">Contents of the message</param>
     public async Task Send(string message)
     {
+        if (!await _verifier.Verify(message))
+        {
+            _logger.LogWarning("Banphrase failed for message: '{:0}'", message);
+            return;
+        }
+
         _connector.Client.SendMessage(_channel, message);
     }
 
@@ -33,6 +42,12 @@ public class ChannelConnector
     /// <param name="replyingTo">Message being replied to</param>
     public async Task Reply(string message, ChatMessage replyingTo)
     {
+        if (!await _verifier.Verify(message))
+        {
+            _logger.LogWarning("Banphrase failed for message: '{:0}'", message);
+            return;
+        }
+
         _connector.Client.SendReply(_channel, replyingTo.Id, message);
     }
 
@@ -62,4 +77,5 @@ public class ChannelConnector
     private readonly ILogger<ChannelConnector> _logger;
     private readonly TwitchConnector _connector;
     private readonly string _channel;
+    private readonly IMessageVerifier _verifier;
 }
